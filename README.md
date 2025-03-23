@@ -112,6 +112,49 @@ node build/index.js
    }
    ```
 
+## Usage with SmolaGents
+
+SearXNG MCP can be easily integrated with [SmolaGents](https://github.com/smol-ai/smolagents), a lightweight framework for building AI agents. This allows you to create powerful research agents that can search the web and process the results:
+
+```python
+from smolagents import CodeAgent, LiteLLMModel, ToolCollection
+from mcp import StdioServerParameters
+
+# Configure the SearXNG MCP server
+server_parameters = StdioServerParameters(
+    command="node",
+    args=["path/to/searxng-mcp/build/index.js"],
+    env={
+        "SEARXNG_URL": "https://your-searxng-instance.com",
+        "SEARXNG_USERNAME": "your_username",  # Optional
+        "SEARXNG_PASSWORD": "your_password"   # Optional
+    }
+)
+
+# Create a tool collection from the MCP server
+with ToolCollection.from_mcp(server_parameters) as tool_collection:
+    # Initialize your LLM model
+    model = LiteLLMModel(
+        model_id="your-model-id",
+        api_key="your-api-key",
+        temperature=0.7
+    )
+    
+    # Create an agent with the search tools
+    search_agent = CodeAgent(
+        name="search_agent",
+        tools=tool_collection.tools,
+        model=model
+    )
+    
+    # Run the agent with a search prompt
+    result = search_agent.run(
+        "Perform a search about: 'climate change solutions' and summarize the top 5 results."
+    )
+    
+    print(result)
+```
+
 ## Available Tools
 
 ### searxngsearch
