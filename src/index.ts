@@ -136,17 +136,20 @@ class SearXNGClient {
               time_range: {
                 type: "string",
                 enum: ["day", "week", "month", "year"],
-                description: "Time range for search results. Options: 'day', 'week', 'month', 'year'. No default (no time restriction)."
+                description: "Time range for search results. Options: 'day', 'week', 'month', 'year'. Default: null (no time restriction).",
+                default: null
               },
               categories: {
                 type: "array",
                 items: { type: "string" },
-                description: "Categories to search in (e.g., 'general', 'images', 'news'). No default (all categories)."
+                description: "Categories to search in (e.g., 'general', 'images', 'news'). Default: null (all categories).",
+                default: null
               },
               engines: {
                 type: "array",
                 items: { type: "string" },
-                description: "Specific search engines to use. No default (all available engines)."
+                description: "Specific search engines to use. Default: null (all available engines).",
+                default: null
               },
               safesearch: {
                 type: "number",
