@@ -112,9 +112,9 @@ node build/index.js
    }
    ```
 
-## Usage with SmolaGents
+## Usage with Smolagents
 
-SearXNG MCP can be easily integrated with [SmolaGents](https://github.com/smol-ai/smolagents), a lightweight framework for building AI agents. This allows you to create powerful research agents that can search the web and process the results:
+SearXNG MCP can be easily integrated with Smolagents, a lightweight framework for building AI agents. This allows you to create powerful research agents that can search the web and process the results:
 
 ```python
 from smolagents import CodeAgent, LiteLLMModel, ToolCollection
