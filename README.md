@@ -124,9 +124,9 @@ Perform web searches using SearXNG, a privacy-respecting metasearch engine. Retu
 |-------------|------------------|----------------------------------------------------------------------------------|-------------|---------|
 | query       | string           | Search query                                                                     | -           | Yes      |
 | language    | string           | Language code for search results (e.g., 'en', 'de', 'fr')                        | 'en'        | No       |
-| time_range  | string           | Time range for search results. Options: 'day', 'week', 'month', 'year'           | -           | No       |
-| categories  | array of strings | Categories to search in (e.g., 'general', 'images', 'news')                      | -           | No       |
-| engines     | array of strings | Specific search engines to use                                                   | -           | No       |
+| time_range  | string           | Time range for search results. Options: 'day', 'week', 'month', 'year'           | null        | No       |
+| categories  | array of strings | Categories to search in (e.g., 'general', 'images', 'news')                      | null        | No       |
+| engines     | array of strings | Specific search engines to use                                                   | null        | No       |
 | safesearch  | number           | Safe search level: 0 (off), 1 (moderate), 2 (strict)                             | 1           | No       |
 | pageno      | number           | Page number for results. Must be minimum 1                                       | 1           | No       |
 | max_results | number           | Maximum number of search results to return. Range: 1-50                          | 10          | No       |
