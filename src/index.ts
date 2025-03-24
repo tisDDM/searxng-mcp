@@ -69,14 +69,7 @@ async function getRandomSearXNGInstance(): Promise<string> {
   }
 }
 
-// Determine the SearXNG URL to use
-let searxngUrl: string;
-
-if (!SEARXNG_URL && USE_RANDOM_INSTANCE) {
-  console.error("[SearXNG] No URL specified, will use a random instance");
-} else if (!SEARXNG_URL && !USE_RANDOM_INSTANCE) {
-  throw new Error("SEARXNG_URL environment variable is required when USE_RANDOM_INSTANCE is set to false");
-}
+// No need to determine the URL here, we'll do it in the run() method
 
 // Basic auth credentials are optional
 const hasBasicAuth = SEARXNG_USERNAME && SEARXNG_PASSWORD;
@@ -363,19 +356,25 @@ class SearXNGClient {
   }
 
   async run(): Promise<void> {
-    // If no instance URL was provided and random instances are enabled, get one
+    // Determine which SearXNG instance to use
     if (!this.instanceUrl) {
-      if (USE_RANDOM_INSTANCE) {
+      if (SEARXNG_URL) {
+        // Use the specified URL if provided
+        this.instanceUrl = SEARXNG_URL;
+        console.error(`[SearXNG] Using specified instance: ${this.instanceUrl}`);
+      } else if (USE_RANDOM_INSTANCE) {
+        // Only fetch random instance if no URL is specified and random instances are enabled
+        console.error("[SearXNG] No URL specified, will use a random instance");
         try {
           this.instanceUrl = await getRandomSearXNGInstance();
+          console.error(`[SearXNG] Using random instance: ${this.instanceUrl}`);
         } catch (error) {
           console.error("[SearXNG] Error getting random instance:", error);
           throw new Error("Failed to get a random SearXNG instance. Please provide SEARXNG_URL or fix the instance fetching issue.");
         }
-      } else if (SEARXNG_URL) {
-        this.instanceUrl = SEARXNG_URL;
       } else {
-        throw new Error("No SearXNG instance URL available");
+        // If no URL is specified and random instances are disabled, throw an error
+        throw new Error("SEARXNG_URL environment variable is required when USE_RANDOM_INSTANCE is set to false");
       }
     }
 
