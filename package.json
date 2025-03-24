@@ -1,6 +1,6 @@
 {
   "name": "searxngmcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for performing internet searches using SearXNG with basic authentication",
   "type": "module",
   "bin": {
@@ -35,8 +35,9 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "0.6.0",
+    "axios": "^1.6.7",
     "dotenv": "^16.4.5",
-    "axios": "^1.6.7"
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",

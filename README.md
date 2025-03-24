@@ -19,11 +19,6 @@ A Model Context Protocol (MCP) server that enables AI assistants to perform web 
 - npm (v7 or higher)
 - Access to a SearXNG instance (self-hosted or public)
 
-### Install from npm
-
-```bash
-npm install -g searxngmcp
-```
 
 ### Install from source
 
@@ -41,9 +36,10 @@ npm run build
 
 ## Configuration
 
-The SearXNG MCP server requires the following environment variables:
+The SearXNG MCP server can be configured with the following environment variables:
 
-- `SEARXNG_URL` (required): The URL of your SearXNG instance (e.g., `https://searx.example.com`)
+- `SEARXNG_URL` (optional): The URL of your SearXNG instance (e.g., `https://searx.example.com`). If not provided, a random public instance will be selected.
+- `USE_RANDOM_INSTANCE` (optional): Set to "false" to disable random instance selection when no URL is provided. Default is "true".
 - `SEARXNG_USERNAME` (optional): Username for basic authentication
 - `SEARXNG_PASSWORD` (optional): Password for basic authentication
 

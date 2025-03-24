@@ -11,6 +11,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import axios from "axios";
 import dotenv from "dotenv";
+import { parse } from "yaml";
 
 dotenv.config();
 
@@ -18,9 +19,63 @@ dotenv.config();
 const SEARXNG_URL = process.env.SEARXNG_URL;
 const SEARXNG_USERNAME = process.env.SEARXNG_USERNAME;
 const SEARXNG_PASSWORD = process.env.SEARXNG_PASSWORD;
+const USE_RANDOM_INSTANCE = process.env.USE_RANDOM_INSTANCE !== "false"; // Default to true if not set
 
-if (!SEARXNG_URL) {
-  throw new Error("SEARXNG_URL environment variable is required");
+// URL for the list of SearXNG instances
+const INSTANCES_LIST_URL = "https://raw.githubusercontent.com/searxng/searx-instances/refs/heads/master/searxinstances/instances.yml";
+
+// Function to fetch and select a random SearXNG instance
+async function getRandomSearXNGInstance(): Promise<string> {
+  try {
+    console.error("[SearXNG] Fetching list of SearXNG instances...");
+    const response = await axios.get(INSTANCES_LIST_URL);
+    const instancesData = parse(response.data);
+    
+    // Debug the structure
+    console.error("[SearXNG] Instances data structure:", Object.keys(instancesData));
+    
+    // Filter for standard internet instances (not onion or hidden)
+    const standardInstances: string[] = [];
+    
+    // The instances.yml file has a structure where each key is a URL
+    for (const [url, data] of Object.entries(instancesData)) {
+      const instanceData = data as any;
+      
+      // Check if it's a standard instance (not hidden or onion)
+      if (
+        instanceData && 
+        (!instanceData.comments || 
+         (!instanceData.comments.includes("hidden") && 
+          !instanceData.comments.includes("onion"))) &&
+        (!instanceData.network_type || instanceData.network_type === "normal")
+      ) {
+        standardInstances.push(url);
+      }
+    }
+    
+    console.error(`[SearXNG] Found ${standardInstances.length} standard instances`);
+    
+    if (standardInstances.length === 0) {
+      throw new Error("No standard SearXNG instances found");
+    }
+    
+    // Select a random instance
+    const randomInstance = standardInstances[Math.floor(Math.random() * standardInstances.length)];
+    console.error(`[SearXNG] Selected random instance: ${randomInstance}`);
+    return randomInstance;
+  } catch (error) {
+    console.error("[SearXNG] Error fetching instances:", error);
+    throw new Error("Failed to fetch SearXNG instances list");
+  }
+}
+
+// Determine the SearXNG URL to use
+let searxngUrl: string;
+
+if (!SEARXNG_URL && USE_RANDOM_INSTANCE) {
+  console.error("[SearXNG] No URL specified, will use a random instance");
+} else if (!SEARXNG_URL && !USE_RANDOM_INSTANCE) {
+  throw new Error("SEARXNG_URL environment variable is required when USE_RANDOM_INSTANCE is set to false");
 }
 
 // Basic auth credentials are optional
@@ -64,13 +119,16 @@ interface SearXNGResponse {
 
 class SearXNGClient {
   private server: Server;
-  private axiosInstance;
+  private axiosInstance: any;
+  private instanceUrl: string;
 
-  constructor() {
+  constructor(instanceUrl?: string) {
+    this.instanceUrl = instanceUrl || "";
+    
     this.server = new Server(
       {
         name: "searxngmcp",
-        version: "0.1.0",
+        version: "0.2.0",
       },
       {
         capabilities: {
@@ -80,21 +138,7 @@ class SearXNGClient {
       }
     );
 
-    // Create axios instance with basic auth if credentials are provided
-    this.axiosInstance = axios.create({
-      baseURL: SEARXNG_URL,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      ...(hasBasicAuth && {
-        auth: {
-          username: SEARXNG_USERNAME!,
-          password: SEARXNG_PASSWORD!,
-        },
-      }),
-    });
-
+    // Initialize without axios instance - will be created during run()
     this.setupHandlers();
     this.setupErrorHandling();
   }
@@ -319,11 +363,43 @@ class SearXNGClient {
   }
 
   async run(): Promise<void> {
+    // If no instance URL was provided and random instances are enabled, get one
+    if (!this.instanceUrl) {
+      if (USE_RANDOM_INSTANCE) {
+        try {
+          this.instanceUrl = await getRandomSearXNGInstance();
+        } catch (error) {
+          console.error("[SearXNG] Error getting random instance:", error);
+          throw new Error("Failed to get a random SearXNG instance. Please provide SEARXNG_URL or fix the instance fetching issue.");
+        }
+      } else if (SEARXNG_URL) {
+        this.instanceUrl = SEARXNG_URL;
+      } else {
+        throw new Error("No SearXNG instance URL available");
+      }
+    }
+
+    // Create axios instance with the determined URL and auth if provided
+    this.axiosInstance = axios.create({
+      baseURL: this.instanceUrl,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      ...(hasBasicAuth && {
+        auth: {
+          username: SEARXNG_USERNAME!,
+          password: SEARXNG_PASSWORD!,
+        },
+      }),
+    });
+
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error("SearXNG MCP server running on stdio");
-    console.error(`Connected to SearXNG instance at: ${SEARXNG_URL}`);
+    console.error(`Connected to SearXNG instance at: ${this.instanceUrl}`);
     console.error(`Basic auth: ${hasBasicAuth ? 'Enabled' : 'Disabled'}`);
+    console.error(`Random instance selection: ${USE_RANDOM_INSTANCE ? 'Enabled' : 'Disabled'}`);
   }
 }
 
