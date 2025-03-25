@@ -3,11 +3,13 @@
   "version": "0.2.0",
   "description": "MCP server for performing internet searches using SearXNG with basic authentication",
   "type": "module",
+  "logo": "logo.png",
   "bin": {
     "searxngmcp": "./build/index.js"
   },
   "files": [
-    "build"
+    "build",
+    "logo.png"
   ],
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",

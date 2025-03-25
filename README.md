@@ -1,5 +1,9 @@
 # SearXNG MCP Server
 
+<p align="center">
+  <img src="logo.png" alt="SearXNG MCP Logo" width="200" height="200">
+</p>
+
 A Model Context Protocol (MCP) server that enables AI assistants to perform web searches using [SearXNG](https://github.com/searxng/searxng), a privacy-respecting metasearch engine. Works out-of-the-box with zero additional deployment by automatically selecting a random instance from [SearX.space](https://searx.space/), while also supporting private instances with basic authentication.
 
 ## Features
