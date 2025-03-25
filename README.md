@@ -1,13 +1,14 @@
 # SearXNG MCP Server
 
-A Model Context Protocol (MCP) server that enables AI assistants to perform web searches using [SearXNG](https://github.com/searxng/searxng), a privacy-respecting metasearch engine.
+A Model Context Protocol (MCP) server that enables AI assistants to perform web searches using [SearXNG](https://github.com/searxng/searxng), a privacy-respecting metasearch engine. Works out-of-the-box with zero additional deployment by automatically selecting a random instance from [SearX.space](https://searx.space/), while also supporting private instances with basic authentication.
 
 ## Features
 
+- **Zero-configuration setup**: Works immediately by using a random public instance from [SearX.space](https://searx.space/)
+- **Private instance support**: Connect to your own SearXNG instance with optional basic authentication
 - Perform web searches with customizable parameters
 - Support for multiple search engines
 - Privacy-focused search results
-- Optional basic authentication for SearXNG instances
 - Markdown-formatted search results
 - Sensible default values for all parameters
 
@@ -38,10 +39,10 @@ npm run build
 
 The SearXNG MCP server can be configured with the following environment variables:
 
-- `SEARXNG_URL` (optional): The URL of your SearXNG instance (e.g., `https://searx.example.com`). If not provided, a random public instance will be selected.
+- `SEARXNG_URL` (optional): The URL of your SearXNG instance (e.g., `https://searx.example.com`). If not provided, a random public instance from [SearX.space](https://searx.space/) will be automatically selected, making the server usable with zero additional deployment.
 - `USE_RANDOM_INSTANCE` (optional): Set to "false" to disable random instance selection when no URL is provided. Default is "true".
-- `SEARXNG_USERNAME` (optional): Username for basic authentication
-- `SEARXNG_PASSWORD` (optional): Password for basic authentication
+- `SEARXNG_USERNAME` (optional): Username for basic authentication when connecting to a private instance
+- `SEARXNG_PASSWORD` (optional): Password for basic authentication when connecting to a private instance
 
 You can set these environment variables in a `.env` file in the root directory of the project:
 
@@ -74,7 +75,9 @@ node build/index.js
        "searxngmcp": {
          "command": "searxngmcp",
          "env": {
+           // Optional: If not provided, a random public instance will be used
            "SEARXNG_URL": "https://searx.example.com",
+           // Optional: Only needed for private instances with authentication
            "SEARXNG_USERNAME": "your_username",
            "SEARXNG_PASSWORD": "your_password"
          },
@@ -97,7 +100,9 @@ node build/index.js
          "command": "node",
          "args": ["/path/to/searxng-mcp/build/index.js"],
          "env": {
+           // Optional: If not provided, a random public instance will be used
            "SEARXNG_URL": "https://searx.example.com",
+           // Optional: Only needed for private instances with authentication
            "SEARXNG_USERNAME": "your_username",
            "SEARXNG_PASSWORD": "your_password"
          },
