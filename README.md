@@ -16,6 +16,8 @@ A Model Context Protocol (MCP) server that enables AI assistants to perform web 
 - Markdown-formatted search results
 - Sensible default values for all parameters
 
+**CAVEAT - Public Instances might be unavailabe for this purpose and return "Request failed with status code 429"**
+
 ## Installation
 
 ### Prerequisites
