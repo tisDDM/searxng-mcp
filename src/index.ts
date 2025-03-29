@@ -261,10 +261,11 @@ class SearXNGClient {
         const maxResults = typeof args.max_results === 'number' ? args.max_results : 10;
         const limitedResults = searchResults.results.slice(0, maxResults);
 
+        // Return the raw JSON data instead of formatting it as Markdown
         return {
           content: [{
             type: "text",
-            text: this.formatResults(searchResults.query, limitedResults, searchResults)
+            text: JSON.stringify(searchResults, null, 2)
           }]
         };
       } catch (error: any) {
