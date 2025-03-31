@@ -261,11 +261,18 @@ class SearXNGClient {
         const maxResults = typeof args.max_results === 'number' ? args.max_results : 10;
         const limitedResults = searchResults.results.slice(0, maxResults);
 
-        // Return the raw JSON data instead of formatting it as Markdown
+        // Construct a new response object with the limited results
+        const finalResponse: SearXNGResponse = {
+          ...searchResults, // Copy other fields like query, answers, suggestions etc.
+          results: limitedResults, // Use the truncated results list
+          number_of_results: limitedResults.length // Update the count to reflect the truncation
+        };
+
+        // Return the modified JSON data
         return {
           content: [{
             type: "text",
-            text: JSON.stringify(searchResults, null, 2)
+            text: JSON.stringify(finalResponse, null, 2)
           }]
         };
       } catch (error: any) {
