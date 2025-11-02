@@ -6,6 +6,10 @@
 
 A Model Context Protocol (MCP) server that enables AI assistants to perform web searches using [SearXNG](https://github.com/searxng/searxng), a privacy-respecting metasearch engine. Works out-of-the-box with zero additional deployment by automatically selecting a random instance from [SearX.space](https://searx.space/), while also supporting private instances with basic authentication.
 
+<a href="https://glama.ai/mcp/servers/@tisDDM/searxng-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@tisDDM/searxng-mcp/badge" alt="SearXNG Server MCP server" />
+</a>
+
 ## Features
 
 - **Zero-configuration setup**: Works immediately by using a random public instance from [SearX.space](https://searx.space/)
